@@ -1,0 +1,27 @@
+{
+  "name": "around-express",
+  "version": "1.0.0",
+  "description": "back end basics (p12)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irmo12/around-express.git"
+  },
+  "author": "Omri Ben Tal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/irmo12/around-express/issues"
+  },
+  "homepage": "https://github.com/irmo12/around-express#readme",
+  "devDependencies": {
+    "eslint": "^8.24.0"
+  },
+  "dependencies": {
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
+  }
+}
