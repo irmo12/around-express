@@ -1,17 +1,16 @@
-import cards from "./data/cards.json";
 
-const router = require("express").Router();
+const cards = require("express").Router();
 
-router.get("/users", (req, res) => {
-  res.send(users);
+cards.get("/cards", (req, res) => {
+  res.send(cards.json);
 });
 
 router.get("/users/:id", (req, res) => {
-  if (!users[req.params.id]) {
-    res.send({ error: `This user doesn't exist` });
+  if (!cards[req.params.id]) {
+    res.send({ error: `This card doesn't exist` });
     return;
   }
-  res.send(users[req.params.id]);
+  res.send(cards[req.params.id]);
 });
 
-module.exports = router;
+module.exports = cards;
