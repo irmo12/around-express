@@ -1,20 +1,15 @@
-const router = require("express").Router();
-const fs = require("fs").promises;
+const router = require('express').Router();
+const fs = require('fs').promises;
+const path = require('path');
 
-router.get("/", (req, res) => {
-  fs.readFile("../data/cards.json", { encoding: "utf-8" })
-    .then((cards) => res.send({ cards }))
+const dataPath = path.join(__dirname, '../', 'data', 'cards.json');
+
+router.get('/', (req, res) => {
+  fs.readFile(dataPath, { encoding: 'utf-8' })
+    .then((cards) => res.send({ data: JSON.parse(cards) }))
     .catch(() => {
-      res.send({ "message": "Internal server error" }.status(500));
+      res.status(500).send({ message: 'Internal server error' });
     });
-});
-
-router.get("/:id", (req, res) => {
-  if (!cards[req.params.id]) {
-    res.send({ "message": `This card doesn't exist` });
-    return;
-  }
-  res.send(cards[req.params.id]);
 });
 
 module.exports = { cardsRoute: router };
