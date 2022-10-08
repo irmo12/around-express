@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const fs = require('fs').promises;
 const path = require('path');
-const {NOT_FOUND, SERVER_INTERNAL} = require('../utils');
+const {NOT_FOUND, SERVER_INTERNAL} = require('../utils/utils');
 
 const dataPath = path.join(__dirname, '../', 'data', 'cards.json');
 
