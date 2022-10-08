@@ -1,5 +1,8 @@
 const NOT_FOUND = 404;
 const SERVER_INTERNAL = 500;
-
+const CREATED = 201;
+const BAD_REQ = 400;
+const UNAUTHORIZED = 401;
+const FORBIDDEN = 403;
 
 module.exports = {NOT_FOUND, SERVER_INTERNAL};
