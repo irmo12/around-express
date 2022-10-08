@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const fs = require('fs').promises;
 const path = require('path');
+const {NOT_FOUND, SERVER_INTERNAL} = require('../utils');
 
 const dataPath = path.join(__dirname, '../', 'data', 'users.json');
 
@@ -20,14 +21,14 @@ router.get('/:id', (req, res) => {
       const user = (data).find((element) => element._id === id);
 
       if (!user) {
-        res.status(404).send({ message: 'User ID not found' });
+        res.status(NOT_FOUND).send({ message: 'User ID not found' });
         return;
       }
       res.send(user);
     })
 
     .catch(() => {
-      res.status(500).send({ message: 'Internal server error' });
+      res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
     });
 });
 
