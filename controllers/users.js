@@ -1,8 +1,7 @@
+const User = require('../models/user');
 const {
   NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
 } = require('../utils/utils');
-const User = require('../models/user');
-const user = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -18,7 +17,6 @@ const getUser = (req, res) => {
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      console.log(err.name);
       if (err.name === 'DocumentNotFoundError') {
         res.status(BAD_REQ).send({
           message: 'No user found with that id',
