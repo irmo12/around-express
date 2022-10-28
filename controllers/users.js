@@ -1,50 +1,47 @@
-const fs = require('fs').promises;
-const path = require('path');
-const { NOT_FOUND, SERVER_INTERNAL } = require('../utils/utils');
-const { User } = require('../models/user');
-
-const dataPath = path.join(__dirname, '../', 'data', 'cards.json');
+const {
+  NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
+} = require('../utils/utils');
+const User = require('../models/user');
+const user = require('../models/user');
 
 const getUsers = (req, res) => {
-  fs.readFile(dataPath, { encoding: 'utf8' })
-    .then((users) => res.send({ data: JSON.parse(users) }))
-    .catch(() => {
-      res.status(500).send({ message: 'Internal server error' });
-    });
-};
-
-const getUser = (req, res) => {
-  const { id } = req.params;
-  fs.readFile(dataPath, { encoding: 'utf8' })
-    .then((users) => {
-      const data = JSON.parse(users);
-      const user = data.find((element) => element._id === id);
-
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'User ID not found' });
-        return;
-      }
-      res.send(user);
-    })
+  User.find({})
+    .then((users) => res.send({ data: users }))
     .catch(() => {
       res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
     });
 };
 
+const getUser = (req, res) => {
+  const { id } = req.params;
+  User.findById(id)
+    .orFail()
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      console.log(err.name);
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(BAD_REQ).send({
+          message: 'No user found with that id',
+        });
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
+      }
+    });
+};
+
 const createUser = (req, res) => {
-  console.log(req.body);
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(CREATED).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({
-           message: `${Object.values(err.errors)
-                      .map(error => error.message)
-                      .join(', ')}`
-        })
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQ).send({
+          message: `${Object.values(err.errors)
+            .map((error) => error.message)
+            .join(', ')}`,
+        });
       } else {
-          res.status(500).send({message: 'Internal server error'});
+        res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
       }
     });
 };
