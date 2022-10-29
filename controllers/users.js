@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const {
-  NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
+  OK, NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
 } = require('../utils/utils');
 
 const getUsers = (req, res) => {
@@ -44,4 +44,28 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUser, getUsers, createUser };
+const patchUser = (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name: req.body.name, about: req.body.about },
+    { new: true, runValidators: true },
+  )
+    .orFail()
+    .then((user) => res.status(OK).send({ data: user }))
+    .catch(() => res.status(SERVER_INTERNAL).send({ message: "couldn't update profile" }));
+};
+
+const patchUserAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .orFail()
+    .then((user) => res.status(OK).send({ data: user }))
+    .catch(() => res.status(SERVER_INTERNAL).send({ message: "couldn't update picture" }));
+};
+module.exports = {
+  getUser,
+  getUsers,
+  createUser,
+  patchUser,
+  patchUserAvatar,
+};

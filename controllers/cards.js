@@ -16,8 +16,16 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.status(CREATED).send({ data: card }))
-    .catch(() => {
-      res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQ).send({
+          message: `${Object.values(err.errors)
+            .map((error) => error.message)
+            .join(', ')}`,
+        });
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
+      }
     });
 };
 
