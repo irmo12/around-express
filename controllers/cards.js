@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const {
-  NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
+  OK, SERVER_INTERNAL, BAD_REQ, CREATED,
 } = require('../utils/utils');
 
 const getCards = (req, res) => {
@@ -29,6 +29,22 @@ const createCard = (req, res) => {
     });
 };
 
+const likeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
+    .then((card) => res.status(OK).send({ data: card }))
+    .catch(() => {
+      res.status(SERVER_INTERNAL).send({ message: 'failed to like card' });
+    });
+};
+
+const unlikeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
+    .then((card) => res.status(OK).send({ data: card }))
+    .catch(() => {
+      res.status(SERVER_INTERNAL).send({ message: 'failed to unlike card' });
+    });
+};
+
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .orFail()
@@ -44,4 +60,10 @@ const deleteCard = (req, res) => {
     });
 };
 
-module.exports = { getCards, createCard, deleteCard };
+module.exports = {
+  getCards,
+  createCard,
+  likeCard,
+  unlikeCard,
+  deleteCard,
+};

@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const {
-  OK, NOT_FOUND, SERVER_INTERNAL, BAD_REQ, CREATED,
+  OK, SERVER_INTERNAL, BAD_REQ, CREATED,
 } = require('../utils/utils');
 
 const getUsers = (req, res) => {
