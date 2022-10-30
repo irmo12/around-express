@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
 const { urlencoded } = require('express');
 const { NOT_FOUND } = require('./utils/utils');
 const router = require('./routes');
@@ -13,6 +14,14 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(urlencoded({ extended: true }));
 app.use((req, res, next) => {

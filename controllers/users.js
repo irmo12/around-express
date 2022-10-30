@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const {
-  OK, SERVER_INTERNAL, BAD_REQ, CREATED,
+  OK, SERVER_INTERNAL, BAD_REQ, CREATED, NOT_FOUND,
 } = require('../utils/utils');
 
 const getUsers = (req, res) => {
@@ -18,9 +18,11 @@ const getUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(BAD_REQ).send({
+        res.status(NOT_FOUND).send({
           message: 'No user found with that id',
         });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQ).send({ message: 'cast error, check body' });
       } else {
         res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
       }
@@ -52,7 +54,19 @@ const patchUser = (req, res) => {
   )
     .orFail()
     .then((user) => res.status(OK).send({ data: user }))
-    .catch(() => res.status(SERVER_INTERNAL).send({ message: "couldn't update profile" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQ).send({
+          message: `${Object.values(err.errors)
+            .map((error) => error.message)
+            .join(', ')}`,
+        });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'no such user' });
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: "couldn't update profile" });
+      }
+    });
 };
 
 const patchUserAvatar = (req, res) => {

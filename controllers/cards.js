@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const {
-  OK, SERVER_INTERNAL, BAD_REQ, CREATED,
+  OK, SERVER_INTERNAL, BAD_REQ, CREATED, NOT_FOUND,
 } = require('../utils/utils');
 
 const getCards = (req, res) => {
@@ -31,17 +31,30 @@ const createCard = (req, res) => {
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
+    .orFail()
     .then((card) => res.status(OK).send({ data: card }))
-    .catch(() => {
-      res.status(SERVER_INTERNAL).send({ message: 'failed to like card' });
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'no such card' });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQ).send({ message: 'cast error, check body' });
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: 'failed to like card' });
+      }
     });
 };
 
 const unlikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => res.status(OK).send({ data: card }))
-    .catch(() => {
-      res.status(SERVER_INTERNAL).send({ message: 'failed to unlike card' });
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'no such card' });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQ).send({ message: 'cast error, check body' });
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: 'failed to unlike card' });
+      }
     });
 };
 
@@ -51,9 +64,11 @@ const deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(BAD_REQ).send({
+        res.status(NOT_FOUND).send({
           message: 'No card found with that id',
         });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQ).send({ message: 'cast error, check body' });
       } else {
         res.status(SERVER_INTERNAL).send({ message: 'Internal server error' });
       }
