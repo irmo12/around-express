@@ -74,8 +74,21 @@ const patchUserAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK).send({ data: user }))
-    .catch(() => res.status(SERVER_INTERNAL).send({ message: "couldn't update picture" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQ).send({
+          message: `${Object.values(err.errors)
+            .map((error) => error.message)
+            .join(', ')}`,
+        });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(NOT_FOUND).send('no such user');
+      } else {
+        res.status(SERVER_INTERNAL).send({ message: "couldn't update picture" });
+      }
+    });
 };
+
 module.exports = {
   getUser,
   getUsers,
