@@ -14,4 +14,4 @@ Some groundwork laid so that a future update will add auxilary js file with midd
 Replaced JSON emulation with a database (mongoDB).
 Added multipe routes for added functionality: likes, patching user and posting cards.
 Error handeling is incomplete, but will catch everything for the time being.
-git
+*mini update* error handeling now more robust.
