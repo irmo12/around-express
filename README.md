@@ -15,3 +15,5 @@ Replaced JSON emulation with a database (mongoDB).
 Added multipe routes for added functionality: likes, patching user and posting cards.
 Error handeling is incomplete, but will catch everything for the time being.
 *mini update* error handeling now more robust.
+
+Future update ought to move repeating error handeling to a seperate module for the sake of more concise code.
